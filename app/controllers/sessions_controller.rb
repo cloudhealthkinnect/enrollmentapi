@@ -9,7 +9,7 @@ class SessionsController < ApplicationController
         jwt = Auth.issue({student_id: student.id})
         render json: {access_token: jwt}
       else
-        render json: student.errors.message
+        render json: student.errors.message, status: 401
       end
     else
       invalid_username_password
@@ -24,7 +24,7 @@ class SessionsController < ApplicationController
   end
 
   def invalid_username_password
-    render json: {error: {message: 'Invalid username or password.'}}
+    render json: {error: {message: 'Invalid username or password.'}}, status: 401
   end
 
   def check_grant_type

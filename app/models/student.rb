@@ -1,12 +1,12 @@
 require 'bcrypt'
-require_dependency 'app/validators/email_validator.rb'
+require_dependency 'validators/email_validator.rb'
 
 class Student < ApplicationRecord
 
   include BCrypt
 
-  validates :firstname, :middlename, :lastname, :gender, :email, presence: { message: "This is required."}
-  validates :email, uniqueness: { message: "E-mail is already in use."}, email: true
+  validates :firstname, :middlename, :lastname, :gender, :email, presence: true
+  validates :email, uniqueness: true, email: true
 
   has_secure_password
 

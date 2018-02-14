@@ -1,11 +1,9 @@
 require 'bcrypt'
-require_dependency 'validators/email_validator.rb'
 
-class Student < ApplicationRecord
-
+class Student < ApplicationRecord # :nodoc:
   include BCrypt
 
-  validates :firstname, :middlename, :lastname, :gender, :email, presence: true
+  validates :first_name, :middle_name, :last_name, :gender, :email, presence: true
   validates :email, uniqueness: true, email: true
 
   has_secure_password
@@ -16,7 +14,6 @@ class Student < ApplicationRecord
   after_create :generate_student_number
 
   def generate_student_number
-    self.update(studentnumber: DateTime.now.year.to_s + "-" + Student.count.to_s)
+    update(student_number: Date.today.year.to_s + '-' + Student.count.to_s)
   end
-
 end

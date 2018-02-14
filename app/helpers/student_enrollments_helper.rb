@@ -1,2 +1,2 @@
-module StudentEnrollmentsHelper
+module StudentEnrollmentsHelper # :nodoc:
 end

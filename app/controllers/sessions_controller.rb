@@ -1,37 +1,18 @@
-class SessionsController < ApplicationController
-
+ACCESS_TOKEN = 'access_token'.freeze
+class SessionsController < ApplicationController # :nodoc:
   skip_before_action :authenticate
-
   def create
-    student = Student.find_by_email(auth_params[:username])
-    if student
-      if student.authenticate(auth_params[:password]) && check_grant_type
-        jwt = Auth.issue({student_id: student.id})
-        render json: {access_token: jwt}
-      else
-        render json: student.errors.message, status: 401
-      end
+    command = AuthenticateUser.call(auth_params)
+    if command.success?
+      render json: { ACCESS_TOKEN: command.result }, status: 200
     else
-      invalid_username_password
+      render json: command.errors, status: 401
     end
-
   end
 
   private
 
   def auth_params
     params.permit(:username, :password, :grant_type)
-  end
-
-  def invalid_username_password
-    render json: {error: {message: 'Invalid username or password.'}}, status: 401
-  end
-
-  def check_grant_type
-    if auth_params[:grant_type] == 'password'
-      true
-    else
-      false
-    end
   end
 end

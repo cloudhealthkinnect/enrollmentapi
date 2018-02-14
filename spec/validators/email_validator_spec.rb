@@ -1,6 +1,4 @@
-# spec/lib/validators/email_validator_spec.rb
 require 'rails_helper'
-require 'validators/email_validator'
 
 # Basic test object
 module Test

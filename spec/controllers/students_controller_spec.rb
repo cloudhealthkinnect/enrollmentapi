@@ -1,76 +1,63 @@
 require 'rails_helper'
-
 RSpec.describe StudentsController, type: :controller do
-
-  context "Logged In" do
-    include AuthHelper
-    before(:each) do
-      @jwt = http_login
-    end
-    describe "Get All Students" do
-      it "should be successful" do
-        request.env["HTTP_AUTHORIZATION"] = "Bearer #{@jwt}"
-        get :index
-        expect(response.response_code).to eql(200)
-      end
-      it "renders a json object for :index" do
-        get :index
-        parsed_body = JSON.parse(response.body.to_json)
-        expect(parsed_body["id"]).should_not == nil
-      end
-    end
-
-    describe "Show Student" do
-      it "renders a json object for the student" do
-        get :show, params: { id: 1 }
-        parsed_body = JSON.parse(response.body.to_json)
-        expect(parsed_body["email"]).should_not == nil
-      end
-    end
-
-    describe "Show Current Student" do
-      it "renders a json object of the current user's info" do
-        get :show, params: { id: 1 }
-        parsed_body = JSON.parse(response.body.to_json)
-        expect(parsed_body["id"]).should_not == nil
-      end
+  let(:student) do
+    create(:student)
+  end
+  let(:course) do
+    create(:course)
+  end
+  let(:student_enrollment) do
+    StudentEnrollment.create(student.id, course.id)
+  end
+  before(:each) do
+    allow_any_instance_of(ApplicationController).to receive(:current_student).and_return(student)
+  end
+  describe 'GET #index' do
+    it 'should be successful' do
+      get :index
+      expect(response).to have_http_status(200)
     end
   end
-
-  context "Not Logged In" do
-    describe "Get All Students" do
-      it "should not be successful" do
-        get :index
-        expect(response.response_code).to eql(401)
-      end
+  describe 'GET #show' do
+    it 'should be successful' do
+      get :show, params: { id: student.id }
+      expect(response).to have_http_status(200)
     end
-
-    describe "Show Student" do
-      it "should not be successful" do
-        get :show, params: { id: 1 }
-        expect(response.response_code).to eql(401)
-      end
+    it 'should fail if student does not exist' do
+      get :show, params: { id: 2 }
+      expect(response).to have_http_status(422)
     end
-
-    describe "Show Current Student" do
-      it "renders a json object of the current user's info" do
-        get :show, params: { id: 1 }
-        expect(response.response_code).to eql(401)
-      end
+  end
+  describe 'POST #create' do
+    it 'should be successful' do
+      post :create, params: {
+        first_name: 'John',
+        middle_name: 'Doe',
+        last_name: 'Deer',
+        gender: 'male',
+        email: 'john@john.com',
+        password: 'password'
+      }
+      expect(response).to have_http_status(200)
     end
-
-    describe "Register Student" do
-      context "with valid attributes" do
-        it "saves the new student into the database" do
-          expect{FactoryBot.create(:student)}.to change{ Student.count }.by(1)
-        end
-      end
-
-      context "with invalid attributes" do
-        it "does not save the student in to the database" do
-          expect { Student.create(email: nil) }.to_not change{ Student.count }
-        end
-      end
+    it 'should fail if email already exists' do
+      post :create, params: {
+        first_name: 'John',
+        middle_name: 'Doe',
+        last_name: 'Deer',
+        gender: 'male',
+        email: student.email,
+        password: 'password'
+      }
+      expect(response).to have_http_status(422)
+    end
+  end
+  describe 'GET show_current_student' do
+    it "should display the current user's information" do
+      get :show_current_student
+      resp = JSON.parse(response.body)
+      current_student_id = Student.find_by_email(resp['email']).id
+      expect(current_student_id).to eq(student.id)
     end
   end
 end

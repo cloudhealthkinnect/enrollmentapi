@@ -1,18 +1,16 @@
 require 'rails_helper'
-
 RSpec.describe CoursesController, type: :controller do
-
-  include AuthHelper
-  before(:each) do
-    @jwt = http_login
+  before do
+    create(:course)
   end
-
-  describe "Get All Courses" do
-      it "should render a json object of all available courses" do
-        request.env["HTTP_AUTHORIZATION"] = "Bearer #{@jwt}"
-        get :index
-        expect(response.response_code).to eql(200)
-      end
+  let(:student) do
+    create(:student)
   end
-
+  describe 'GET #index' do
+    it 'should be successful' do
+      allow_any_instance_of(ApplicationController).to receive(:current_student).and_return(student)
+      get :index
+      expect(response).to be_success
+    end
+  end
 end

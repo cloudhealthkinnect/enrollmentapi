@@ -1,0 +1,31 @@
+AllCops:
+  Exclude:
+    - config/**/*.rb
+    - db/schema.rb
+    - db/seeds.rb
+    - db/migrate/*
+    - Gemfile
+    - bin/*
+    - Rakefile
+    - spec/support/*
+    - spec/rails_helper.rb
+    - spec/spec_helper.rb
+
+Metrics/ModuleLength:
+  Exclude:
+    - '**/*_spec.rb'
+
+Metrics/BlockLength:
+  Exclude:
+    - '**/*_spec.rb'
+    - 'spec/support/**/*'
+    - 'spec/factories/*'
+
+Style/ClassAndModuleChildren:
+  EnforcedStyle: compact
+  Exclude:
+    - 'app/channels/application_cable/channel.rb'
+    - 'app/channels/application_cable/connection.rb'
+
+Metrics/LineLength:
+  Max: 110

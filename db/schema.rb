@@ -32,13 +32,13 @@ ActiveRecord::Schema.define(version: 20180209014945) do
   end
 
   create_table "students", force: :cascade do |t|
-    t.string "firstname"
-    t.string "middlename"
-    t.string "lastname"
+    t.string "first_name"
+    t.string "middle_name"
+    t.string "last_name"
     t.string "gender"
     t.string "email"
     t.string "password_digest"
-    t.string "studentnumber"
+    t.string "student_number"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
